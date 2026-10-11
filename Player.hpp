@@ -2,6 +2,9 @@
 #define PLAYER_HPP
 #include <string>
 
+
+// Core Data Record
+
 struct MatchRecord{
     int match_id;
     std::string opponent;
