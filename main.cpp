@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <iostream>
 #include <string>
 
@@ -149,4 +150,10 @@ int main() {
     }
 
     return 0;
+=======
+#include <iostream> 
+using namespace std;
+int main(){
+    cout << "Hello Everyone, Nice to see you! MABUHAY" << endl;
+>>>>>>> 6bce54b8a41fd14f7010eaa33c0c663420d73d48
 }
