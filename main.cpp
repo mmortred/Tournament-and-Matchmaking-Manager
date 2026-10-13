@@ -2,8 +2,9 @@
 #include <string>
 
 // Include system orchestrator header
+#include "Player.hpp"
 #include "TournamentManager.hpp"
-
+#include "HashTable.hpp"
 using namespace std; // Safe to use inside .cpp files!
 
 // Simple input clearing function without <limits>
@@ -44,6 +45,9 @@ int main() {
                 cout << "\n--- [1] REGISTER NEW PLAYER ---\n";
                 cout << "Enter username (1-16 chars): ";
                 cin >> username;
+
+                TournamentManager test;
+                test.registerPlayer(username);
                 break;
             }
 

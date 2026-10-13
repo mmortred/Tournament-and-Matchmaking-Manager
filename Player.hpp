@@ -1,19 +1,19 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 #include <string>
-
+#include "LinkedList.hpp"
 
 // Core Data Record
 
-struct MatchRecord{
-    int match_id;
-    std::string opponent;
-    std::string outcome;
-    int rating_change;      // +10 or -10
+// struct MatchRecord{
+//     int match_id;
+//     std::string opponent;
+//     std::string outcome;
+//     int rating_change;      // +10 or -10
 
-    MatchRecord(int match_id = 0, const std::string& opponent = "", const std::string& outcome = "", int change = 0):
-                match_id(match_id), opponent(opponent), outcome(outcome), rating_change(change) {}
-};
+//     MatchRecord(int match_id = 0, const std::string& opponent = "", const std::string& outcome = "", int change = 0):
+//                 match_id(match_id), opponent(opponent), outcome(outcome), rating_change(change) {}
+// };
 
 struct Player{
     std::string username;
