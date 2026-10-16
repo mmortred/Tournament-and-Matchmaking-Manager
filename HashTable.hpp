@@ -7,121 +7,125 @@
 
 class HashTable {
 private:
-    static constexpr int SIZE = 10;
-
     struct Node {
-        Player* player;
-        Node* next;
+        Player* player; // Pointer to Player object 
+        Node* next;     // Next node in collision chain
 
-        Node(Player* p) : player(p), next(nullptr) {}
+        Node(Player* player) : player(player), next(nullptr) {}
     };
 
-    Node* table[SIZE];
+    Node** buckets;       // Dynamic array of bucket head pointers
+    std::size_t capacity; // Total capacity of bucket array
+    std::size_t count;    // Total registered player count
 
-    // Calculate the array index using the username
-    int hashFunction(const std::string& username) const {
-        int sum = 0;
 
-        for (char c : username) {
-            sum += c;
+    std::size_t hashFunction(const std::string& key) const {
+        std::size_t sum = 0;
+        std::size_t i = 0;
+
+        while (i < key.length()) {
+            sum = sum * 31 + key[i];
+            i++;
         }
 
-        return sum % SIZE;
+        return sum % capacity;
     }
 
 public:
-    // Initialize every array slot as empty
-    HashTable() {
-        for (int i = 0; i < SIZE; i++) {
-            table[i] = nullptr;
+    // Constructor, 101 is prime = less collision
+    HashTable(std::size_t cap = 101) : capacity(cap), count(0) {
+        buckets = new Node*[capacity]; 
+
+        for(std::size_t i = 0; i < capacity; i++){
+            buckets[i] = nullptr;
         }
     }
 
-    // Delete the linked-list nodes when the hash table is destroyed
+    // Destructor
     ~HashTable() {
-        for (int i = 0; i < SIZE; i++) {
-            Node* current = table[i];
-
+        std::size_t i = 0;
+        while (i < capacity) {
+            Node* current = buckets[i];
             while (current != nullptr) {
                 Node* toDelete = current;
                 current = current->next;
-
-                delete toDelete;
+                delete toDelete->player; 
+                delete toDelete;      
             }
-
-            table[i] = nullptr;
+            i++;
         }
+        delete[] buckets; // Free dynamic bucket array
     }
 
-    // Insert a player into the hash table
+    // Check if player exists by username
+    bool contains(const std::string& username) const {
+        std::size_t index = hashFunction(username);
+        Node* current = buckets[index];
+
+        while (current != nullptr) {
+            if (current->player->username == username) {
+                return true;
+            }
+            current = current->next;
+        }
+        return false;
+    }
+
+    // Register a new player
     bool insert(Player* player) {
-        if (player == nullptr) {
+        if (player == nullptr) return false;
+
+        // Reject duplicate username
+        if (contains(player->username)) {
             return false;
         }
 
-        int index = hashFunction(player->username);
+        std::size_t index = hashFunction(player->username);
 
-        Node* current = table[index];
-
-        // Prevent duplicate usernames
-        while (current != nullptr) {
-            if (current->player->username == player->username) {
-                return false;
-            }
-
-            current = current->next;
-        }
-
-        // Create a new node
+        // Insert at head of collision chain in O(1)
         Node* newNode = new Node(player);
+        newNode->next = buckets[index];
+        buckets[index] = newNode;
 
-        // Insert at the beginning of the linked list
-        newNode->next = table[index];
-        table[index] = newNode;
-
+        count++;
         return true;
     }
 
-    // Find a player using their username
+    // Fast O(1) lookup by username
     Player* search(const std::string& username) const {
-        int index = hashFunction(username);
-
-        Node* current = table[index];
+        std::size_t index = hashFunction(username);
+        Node* current = buckets[index];
 
         while (current != nullptr) {
             if (current->player->username == username) {
                 return current->player;
             }
-
             current = current->next;
         }
-
         return nullptr;
     }
 
-    // Display every array slot and its linked list
+    // Display contents of active buckets for visual verification
     void display() const {
-        std::cout << "\n========== HASH TABLE ==========\n";
-
-        for (int i = 0; i < SIZE; i++) {
-            std::cout << "[" << i << "] -> ";
-
-            Node* current = table[i];
-
-            if (current == nullptr) {
-                std::cout << "EMPTY";
+        std::cout << "\n========== HASH TABLE REGISTER ==========\n";
+        std::size_t i = 0;
+        while (i < capacity) {
+            if (buckets[i] != nullptr) {
+                std::cout << "Bucket [" << i << "] -> ";
+                Node* current = buckets[i];
+                while (current != nullptr) {
+                    std::cout << current->player->username << " (" << current->player->rating << " RATING) -> ";
+                    current = current->next;
+                }
+                std::cout << "nullptr\n";
             }
-
-            while (current != nullptr) {
-                std::cout << current->player->username << " -> ";
-                current = current->next;
-            }
-
-            std::cout << "nullptr\n";
+            i++;
         }
-
-        std::cout << "================================\n";
+        std::cout << "=========================================\n";
     }
+
+    std::size_t size() const { return count; }
+    bool isEmpty() const { return count == 0; }
 };
 
-#endif
+#endif // HASHTABLE_HPP
