@@ -8,15 +8,15 @@
 class HashTable {
 private:
     struct Node {
-        Player* player; // Pointer to Player object 
+        Player* player; 
         Node* next;     // Next node in collision chain
 
         Node(Player* player) : player(player), next(nullptr) {}
     };
 
-    Node** buckets;       // Dynamic array of bucket head pointers
-    std::size_t capacity; // Total capacity of bucket array
-    std::size_t count;    // Total registered player count
+    Node** buckets;       
+    std::size_t capacity; 
+    std::size_t count;    
 
 
     std::size_t hashFunction(const std::string& key) const {
@@ -34,6 +34,12 @@ private:
 public:
     // Constructor, 101 is prime = less collision
     HashTable(std::size_t cap = 101) : capacity(cap), count(0) {
+        if (cap < 10){
+            capacity = 101; // default capacity
+        }else{
+            capacity = cap;
+        }
+
         buckets = new Node*[capacity]; 
 
         for(std::size_t i = 0; i < capacity; i++){
@@ -54,7 +60,7 @@ public:
             }
             i++;
         }
-        delete[] buckets; // Free dynamic bucket array
+        delete[] buckets; 
     }
 
     // Check if player exists by username
@@ -82,7 +88,7 @@ public:
 
         std::size_t index = hashFunction(player->username);
 
-        // Insert at head of collision chain in O(1)
+     
         Node* newNode = new Node(player);
         newNode->next = buckets[index];
         buckets[index] = newNode;
@@ -91,7 +97,6 @@ public:
         return true;
     }
 
-    // Fast O(1) lookup by username
     Player* search(const std::string& username) const {
         std::size_t index = hashFunction(username);
         Node* current = buckets[index];
@@ -105,7 +110,7 @@ public:
         return nullptr;
     }
 
-    // Display contents of active buckets for visual verification
+
     void display() const {
         std::cout << "\n========== HASH TABLE REGISTER ==========\n";
         std::size_t i = 0;
